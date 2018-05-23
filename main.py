@@ -11,7 +11,6 @@ class Game:
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
-        pg.key.set_repeat(500, 100)
         self.load_data()
 
     def load_data(self):
@@ -19,24 +18,34 @@ class Game:
         img_folder = path.join(game_folder, 'img2')
         self.map = Map(path.join(game_folder, 'map2.txt'))
         self.player_img = pg.image.load(path.join(img_folder, PLAYER_IMG)).convert_alpha()
+        self.stone_img = pg.image.load(path.join(img_folder, STONE_IMG)).convert_alpha()
+        self.cerberus_img = pg.image.load(path.join(img_folder, CERBERUS_IMG)).convert_alpha()
+        self.hydra_img = pg.image.load(path.join(img_folder, HYDRA_IMG)).convert_alpha()
+        self.wall_img = pg.image.load(path.join(img_folder, WALL_IMG)).convert_alpha()
+        self.wall_img = pg.transform.scale(self.wall_img, (TILESIZE, TILESIZE))
 
     def new(self):
         # initialize all variables and do all the setup for a new game
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
+        self.mobs = pg.sprite.Group()
+        self.stones = pg.sprite.Group()
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
                 if tile == '1':
                     Wall(self, col, row)
+                if tile == 'C':
+                    Cerberus(self, col, row)
+                if tile == 'H':
+                    Hydra(self, col, row)
                 if tile == 'P':
                     self.player = Player(self, col, row)
         self.camera = Camera(self.map.width, self.map.height)
 
     def run(self):
-        # game loop - set self.playing = False to end the game
         self.playing = True
         while self.playing:
-            self.dt = self.clock.tick(FPS) / 1000
+            self.dt = self.clock.tick(FPS) / 1000.0
             self.events()
             self.update()
             self.draw()
@@ -49,6 +58,21 @@ class Game:
         # update portion of the game loop
         self.all_sprites.update()
         self.camera.update(self.player)
+        # mobs hit player
+        hits = pg.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
+        for hit in hits:
+            self.player.health -= HYDRA_DMG
+            self.player.health -= CERBERUS_DMG
+            hit.vel = vec(0, 0)
+            if self.player.health <= 0:
+                self.playing = False
+        if hits:
+            self.player.pos += vec(CERBERUS_KNOCKBACK, 0).rotate(-hits[0].rot)
+            self.player.pos += vec(HYDRA_KNOCKBACK, 0).rotate(-hits[0].rot)
+        hits = pg.sprite.groupcollide(self.mobs, self.stones, False, True)
+        for hit in hits:
+            hit.health -= STONE_DAMAGE
+            hit.vel - vec(0, 0)
 
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
@@ -57,9 +81,12 @@ class Game:
             pg.draw.line(self.screen, LIGHTGREY, (0, y), (WIDTH, y))
 
     def draw(self):
+        pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         self.screen.fill(BGCOLOR)
-        self.draw_grid()
+        # self.draw_grid()
         for sprite in self.all_sprites:
+            if isinstance(sprite, Hydra) or isinstance(sprite, Cerberus) or isinstance(sprite, Player):
+                sprite.draw_health()
             self.screen.blit(sprite.image, self.camera.apply(sprite))
         pg.display.flip()
 
