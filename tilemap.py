@@ -1,8 +1,8 @@
 import pygame as pg
 import os
-import pytmx
+#import pytmx
 from settings import *
-from pytmx.util_pygame import load_pygame
+#from pytmx.util_pygame import load_pygame
 
 def collide_hit_rect(one, two):
     return one.hit_rect.colliderect(two.rect)
