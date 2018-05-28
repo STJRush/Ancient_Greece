@@ -1,0 +1,3 @@
+The sections that are commented out are either:
+1. Code which wouldn't work properly and couldn't be fixed in the deadline
+2. Need an additional module to be installed(e.g. PyTMX)
