@@ -1,5 +1,5 @@
 import pygame as pg
-from random import uniform
+from random import uniform, choice
 from settings import *
 from tilemap import collide_hit_rect
 vec = pg.math.Vector2
@@ -100,13 +100,23 @@ class Cerberus(pg.sprite.Sprite):
         self.rect.center = self.pos
         self.rot = 0
         self.health = CERBERUS_HEALTH
+        self.speed = choice(CERBERUS_SPEEDS)
+
+    def avoid_mobs(self):
+        for mob in self.game.mobs:
+            if mob != self:
+                dist = self.pos - mob.pos
+                if 0 < dist.length() < AVOID_RADIUS:
+                    self.acc += dist.normalize()
 
     def update(self):
         self.rot = (self.game.player.pos - self.pos).angle_to(vec(1, 0))
         self.image = pg.transform.rotate(self.game.cerberus_img, self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
-        self.acc = vec(CERBERUS_SPEED,0).rotate(-self.rot)
+        self.acc = vec(1,0).rotate(-self.rot)
+        self.avoid_mobs()
+        self.acc.scale_to_length(self.speed)
         self.acc += self.vel * -1
         self.vel += self.acc * self.game.dt
         self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
@@ -145,13 +155,23 @@ class Hydra(pg.sprite.Sprite):
         self.rect.center = self.pos
         self.rot = 0
         self.health = HYDRA_HEALTH
+        self.speed = choice(HYDRA_SPEEDS)
+
+    def avoid_mobs(self):
+        for mob in self.game.mobs:
+            if mob != self:
+                dist = self.pos - mob.pos
+                if 0 < dist.length() < AVOID_RADIUS:
+                    self.acc += dist.normalize()
 
     def update(self):
         self.rot = (self.game.player.pos - self.pos).angle_to(vec(1, 0))
         self.image = pg.transform.rotate(self.game.hydra_img, self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
-        self.acc = vec(HYDRA_SPEED,0).rotate(-self.rot)
+        self.acc = vec(1,0).rotate(-self.rot)
+        self.avoid_mobs()
+        self.acc.scale_to_length(self.speed)
         self.acc += self.vel * -1
         self.vel += self.acc * self.game.dt
         self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
@@ -207,3 +227,4 @@ class Wall(pg.sprite.Sprite):
         self.y = y
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
+
