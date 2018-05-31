@@ -1,3 +1,4 @@
+#PADRAIG'S CODE BEGINS
 import pygame as pg
 import os
 #import pytmx
@@ -7,6 +8,7 @@ from settings import *
 def collide_hit_rect(one, two):
     return one.hit_rect.colliderect(two.rect)
 
+#defines the map
 class Map:
     def __init__(self, filename):
         self.data = []
@@ -41,7 +43,8 @@ class Map:
         #self.render(temp_surface)
         #return temp_surface
 
-
+#Follows the player's sprite while it's moving around the map
+#The map is a scrolling map, meaning if you move far enough to the right, you will start entering a different part of the map
 class Camera:
     def __init__(self, width, height):
         self.camera = pg.Rect(0, 0, width, height)
@@ -63,3 +66,4 @@ class Camera:
         x = max(-(self.width - WIDTH), x)
         y = max(-(self.height - HEIGHT), y)
         self.camera = pg.Rect(x, y, self.width, self.height)
+#PADRAIG'S CODE ENDS
