@@ -40,7 +40,7 @@ class Game:
         self.walls = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.stones = pg.sprite.Group()
-        
+        # Tells the program to put specific things on the map
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
                 if tile == '1':
@@ -54,6 +54,7 @@ class Game:
         #self.player = Player(self, 5, 5)
         self.camera = Camera(self.map.width, self.map.height)
 
+     #function for running the code
     def run(self):
         self.playing = True
         while self.playing:
@@ -61,7 +62,7 @@ class Game:
             self.events()
             self.update()
             self.draw()
-
+    #Quit program once player closes window
     def quit(self):
         pg.quit()
         sys.exit()
@@ -81,17 +82,18 @@ class Game:
         if hits:
             self.player.pos += vec(CERBERUS_KNOCKBACK, 0).rotate(-hits[0].rot)
             self.player.pos += vec(HYDRA_KNOCKBACK, 0).rotate(-hits[0].rot)
+          #if stones hit enemies
         hits = pg.sprite.groupcollide(self.mobs, self.stones, False, True)
         for hit in hits:
             hit.health -= STONE_DAMAGE
             hit.vel - vec(0, 0)
-
+    #Draw the grid on the map
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
             pg.draw.line(self.screen, LIGHTGREY, (x, 0), (x, HEIGHT))
         for y in range(0, HEIGHT, TILESIZE):
             pg.draw.line(self.screen, LIGHTGREY, (0, y), (WIDTH, y))
-
+    #Draw everything
     def draw(self):
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         self.screen.fill(BGCOLOR)
@@ -102,7 +104,7 @@ class Game:
                 sprite.draw_health()
             self.screen.blit(sprite.image, self.camera.apply(sprite))
         pg.display.flip()
-
+    #If a player clicks or presses something
     def events(self):
         # catch all events here
         for event in pg.event.get():
@@ -111,7 +113,7 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     self.quit()
-
+    #PASS means leave it for now
     def show_start_screen(self):
         pass
 
