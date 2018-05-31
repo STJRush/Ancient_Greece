@@ -1,18 +1,25 @@
+#PADRAIG'S CODE BEGINS
+#Tutorals by Kidscancode
+#Imports
 import pygame as pg
 import sys
 from os import path
+#imports everything from other python files
 from settings import *
 from sprites import *
 from tilemap import *
 
+#ENTIRE GAME 
 class Game:
+    #initialize the class
     def __init__(self):
         pg.init()
+        #Variables arw anything in all CAPS
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         self.load_data()
-
+#Loads images
     def load_data(self):
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'img2')
@@ -33,6 +40,7 @@ class Game:
         self.walls = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.stones = pg.sprite.Group()
+        
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
                 if tile == '1':
