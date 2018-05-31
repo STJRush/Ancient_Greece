@@ -1,9 +1,12 @@
+#PADRAIG'S CODE BEGINS 
 import pygame as pg
+#Uniform picks a single part of a random choice
 from random import uniform, choice
 from settings import *
 from tilemap import collide_hit_rect
 vec = pg.math.Vector2
 
+#Makes everything stop moving when colliding with walls
 def collide_with_walls(sprite, group, dir):
     if dir == 'x':
         hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
@@ -23,7 +26,9 @@ def collide_with_walls(sprite, group, dir):
                 sprite.pos.y = hits[0].rect.bottom + sprite.hit_rect.height / 2.0
             sprite.vel.y = 0
             sprite.hit_rect.centery = sprite.pos.y
-
+#PADRAIG'S CODE ENDS
+#FINN'S CODE BEGINS  
+#defines player sprite
 class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
@@ -38,7 +43,7 @@ class Player(pg.sprite.Sprite):
         self.rot = 0
         self.last_shot = 0
         self.health = PLAYER_HEALTH
-
+    #controls
     def get_keys(self):
         self.rot_speed = 0
         self.vel = vec(0, 0)
@@ -59,7 +64,8 @@ class Player(pg.sprite.Sprite):
                 pos = self.pos + SLING_OFFSET.rotate(-self.rot)
                 Stone(self.game, self.pos, dir)
                 self.vel = vec(-KICKBACK, 0).rotate(-self.rot)
-
+     #FINN'S CODE ENDS
+    #PADRAIG'S CODE BEGINS
     def update(self):
         self.get_keys()
         self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
@@ -72,7 +78,7 @@ class Player(pg.sprite.Sprite):
         self.hit_rect.centery = self.pos.y
         collide_with_walls(self, self.game.walls, 'y')
         self.rect.center = self.hit_rect.center
-
+    #Display health when player gets hit
     def draw_health(self):
         if self.health > 200:
             col = GREEN
@@ -84,7 +90,9 @@ class Player(pg.sprite.Sprite):
         self.health_bar = pg.Rect(0, 0, width, 7)
         if self.health < PLAYER_HEALTH:
             pg.draw.rect(self.image, col, self.health_bar)
-
+   #PADRAIG'S CODE ENDS
+#CONNOR'S CODE BEGINS
+#define enemy sprite
 class Cerberus(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.mobs
@@ -101,7 +109,7 @@ class Cerberus(pg.sprite.Sprite):
         self.rot = 0
         self.health = CERBERUS_HEALTH
         self.speed = choice(CERBERUS_SPEEDS)
-
+    #makes sure that the mobs don't stack on top of each other
     def avoid_mobs(self):
         for mob in self.game.mobs:
             if mob != self:
@@ -127,7 +135,7 @@ class Cerberus(pg.sprite.Sprite):
         self.rect.center = self.hit_rect.center
         if self.health <= 0:
             self.kill()
-
+    #Displays health when hit by weapon
     def draw_health(self):
         if self.health > 60:
             col = GREEN
@@ -140,6 +148,7 @@ class Cerberus(pg.sprite.Sprite):
         if self.health < CERBERUS_HEALTH:
             pg.draw.rect(self.image, col, self.health_bar)
 
+ #define enemy sprite
 class Hydra(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.mobs
@@ -156,7 +165,7 @@ class Hydra(pg.sprite.Sprite):
         self.rot = 0
         self.health = HYDRA_HEALTH
         self.speed = choice(HYDRA_SPEEDS)
-
+   #keeps mobs from stacking on top of each other
     def avoid_mobs(self):
         for mob in self.game.mobs:
             if mob != self:
@@ -182,7 +191,7 @@ class Hydra(pg.sprite.Sprite):
         self.rect.center = self.hit_rect.center
         if self.health <= 0:
             self.kill()
-
+    #Display health when hit by weapon
     def draw_health(self):
         if self.health > 140:
             col = GREEN
@@ -194,7 +203,9 @@ class Hydra(pg.sprite.Sprite):
         self.health_bar = pg.Rect(0, 0, width, 7)
         if self.health < HYDRA_HEALTH:
             pg.draw.rect(self.image, col, self.health_bar)
-
+#CONNOR'S CODE ENDS
+#PADRAIG'S CODE BEGINS
+#define weapon sprite
 class Stone(pg.sprite.Sprite):
     def __init__(self, game, pos, dir):
         self.groups = game.all_sprites, game.stones
@@ -216,6 +227,8 @@ class Stone(pg.sprite.Sprite):
         if pg.time.get_ticks() - self.spawn_time > STONE_LIFETIME:
             self.kill()
 
+ #defines Walls
+#walls have to  be a class to make sure it has it's own ways of working
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.walls
@@ -227,4 +240,4 @@ class Wall(pg.sprite.Sprite):
         self.y = y
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
-
+#PADRAIG'S CODE ENDS
